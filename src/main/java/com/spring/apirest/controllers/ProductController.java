@@ -7,14 +7,12 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class ProductController {
@@ -32,5 +30,14 @@ public class ProductController {
     @GetMapping(value = "/products")
     public ResponseEntity<List<Product>> getAll(){
         return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());
+    }
+
+    @GetMapping(value = "/products/{id}")
+    public ResponseEntity<Object> getProduct(@PathVariable(value="id") UUID id){
+        Optional<Product> product = productRepository.findById(id);
+        if(product.isEmpty()){
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(product.get());
     }
 }
