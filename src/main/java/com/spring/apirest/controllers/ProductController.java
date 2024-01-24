@@ -48,6 +48,7 @@ public class ProductController {
         if (product.isEmpty()) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no product saved with this ID");
         }
+        product.get().add(linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
         return ResponseEntity.status(HttpStatus.OK).body(product.get());
     }
 
