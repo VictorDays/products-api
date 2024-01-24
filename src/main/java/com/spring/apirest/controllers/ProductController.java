@@ -36,8 +36,26 @@ public class ProductController {
     public ResponseEntity<Object> getProduct(@PathVariable(value="id") UUID id){
         Optional<Product> product = productRepository.findById(id);
         if(product.isEmpty()){
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no product saved with this ID");
         }
         return ResponseEntity.status(HttpStatus.OK).body(product.get());
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
+                                                @RequestBody @Valid ProductRecordDTO productRecordDTO){
+        //Busca  e retorna o objeto no banco de dados
+        Optional<Product> productBD = productRepository.findById(id);
+        if (productBD.isEmpty()){
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+        }
+
+        //atribuindo o objeto de na variável productModel
+        var productModel = productBD.get();
+
+        //trasnforma o dto em model
+        BeanUtils.copyProperties(productRecordDTO, productModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body(productRepository.save(productModel));
     }
 }
