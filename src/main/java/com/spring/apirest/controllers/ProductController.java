@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 public class ProductController {
 
@@ -29,9 +32,16 @@ public class ProductController {
 
     @GetMapping(value = "/products")
     public ResponseEntity<List<Product>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());
+        List<Product> listProducts = productRepository.findAll();
+        if (!listProducts.isEmpty()){
+            for (Product product: listProducts){
+                UUID id = product.getIdProduct();
+                product.add(linkTo(methodOn(ProductController.class).getProduct(id)).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(listProducts);
     }
-
+    //quando o cliente solicitar a lista dos produtos vai ser retorna o link para os detalhes de um produto que no caso seria o metodo getProduct;
     @GetMapping(value = "/products/{id}")
     public ResponseEntity<Object> getProduct(@PathVariable(value = "id") UUID id) {
         Optional<Product> product = productRepository.findById(id);
