@@ -42,6 +42,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(listProducts);
     }
     //quando o cliente solicitar a lista dos produtos vai ser retorna o link para os detalhes de um produto que no caso seria o metodo getProduct;
+
     @GetMapping(value = "/products/{id}")
     public ResponseEntity<Object> getProduct(@PathVariable(value = "id") UUID id) {
         Optional<Product> product = productRepository.findById(id);
