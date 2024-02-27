@@ -27,6 +27,12 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    public User(String login, String passaword, UserRole role) {
+        this.login = login;
+        this.passaword = passaword;
+        this.role = role;
+    }
+
     public UUID getIdUser() {
         return idUser;
     }
