@@ -1,7 +1,6 @@
-package com.spring.apirest.models;
+package com.spring.apirest.models.products;
 
 import jakarta.persistence.*;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;

@@ -1,7 +1,7 @@
 package com.spring.apirest.controllers;
 
 import com.spring.apirest.dtos.ProductRecordDTO;
-import com.spring.apirest.models.Product;
+import com.spring.apirest.models.products.Product;
 import com.spring.apirest.repositories.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
