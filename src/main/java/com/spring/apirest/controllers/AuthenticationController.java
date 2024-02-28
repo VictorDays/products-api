@@ -29,23 +29,27 @@ public class AuthenticationController {
 
     @PostMapping(value ="/auth/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO dto){
-        //verificar login e senha do usuário
+        // Verificar login e senha do usuário
         var usaernamePassword = new UsernamePasswordAuthenticationToken(dto.login(), dto.password());
 
-        //autenticar usuario
+        // Autenticar usuario
         var auth = this.authenticationManager.authenticate(usaernamePassword);
 
+        // Retorna uma resposta de sucesso 200 (OK) indicando que o usuário foi registrado com sucesso.
         return ResponseEntity.ok().build();
     }
     @PostMapping(value ="/auth/register")
     public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDTO){
+        // Se um usuário com o mesmo login já existir, retorna uma resposta de erro 400 (Bad Request).
         if (this.userRepository.findByLogin(registerDTO.login()) != null) return ResponseEntity.badRequest().build();
 
+        // Criptografa a senha fornecida no DTO usando o algoritmo BCrypt.
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
         var newUser = new User(registerDTO.login(), registerDTO.password(), registerDTO.role());
 
         this.userRepository.save(newUser);
 
+        // Retorna uma resposta de sucesso 200 (OK) indicando que o usuário foi registrado com sucesso.
         return ResponseEntity.ok().build();
     }
 }

@@ -19,9 +19,13 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
+    // Método para gerar um token JWT com base nas informações do usuário.
     public String generateToken(User user){
         try{
+            // Cria um algoritmo de criptografia usando o segredo fornecido.
             Algorithm algorithm = Algorithm.HMAC256(secret);
+
+            // Cria o token JWT com algumas informações específicas do usuário, como emissor, assunto e data de expiração.
             String token =  JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getLogin())
@@ -33,9 +37,12 @@ public class TokenService {
         }
     }
 
+    // Método para validar e extrair o login de um token JWT.
     public String validateToken(String token){
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
+
+            // Verifica a validade do token JWT e extrai o login do usuário.
             return JWT.require(algorithm)
                     .withIssuer("auth-api")
                     .build()
@@ -47,7 +54,7 @@ public class TokenService {
 
     }
 
-    // retorna uma instância de Instant que representa a data de expiração de um token JWT.
+    // Retorna uma instância de Instant que representa a data de expiração do token.
     private Instant generationExpirationDate(){
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
