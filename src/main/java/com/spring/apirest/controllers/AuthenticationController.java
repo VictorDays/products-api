@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(name = "auth")
 public class AuthenticationController {
 
     @Autowired
@@ -28,7 +27,7 @@ public class AuthenticationController {
     @Autowired
     UserRepository userRepository;
 
-    @PostMapping("/login")
+    @PostMapping(value ="/auth/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO dto){
         //verificar login e senha do usuário
         var usaernamePassword = new UsernamePasswordAuthenticationToken(dto.login(), dto.password());
@@ -38,7 +37,7 @@ public class AuthenticationController {
 
         return ResponseEntity.ok().build();
     }
-    @PostMapping("/register")
+    @PostMapping(value ="/auth/register")
     public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDTO){
         if (this.userRepository.findByLogin(registerDTO.login()) != null) return ResponseEntity.badRequest().build();
 
