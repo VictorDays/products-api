@@ -1,7 +1,9 @@
 package com.spring.apirest.controllers;
 
+import com.spring.apirest.config.security.TokenService;
 import com.spring.apirest.dtos.AuthenticationDTO;
 
+import com.spring.apirest.dtos.LoginResponseDTO;
 import com.spring.apirest.dtos.RegisterDTO;
 import com.spring.apirest.models.users.User;
 import com.spring.apirest.repositories.UserRepository;
@@ -27,16 +29,21 @@ public class AuthenticationController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    TokenService tokenService;
+
     @PostMapping(value ="/auth/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO dto){
         // Verificar login e senha do usuário
         var usaernamePassword = new UsernamePasswordAuthenticationToken(dto.login(), dto.password());
-
         // Autenticar usuario
         var auth = this.authenticationManager.authenticate(usaernamePassword);
 
+        // Gerando o Token
+        var token = tokenService.generateToken((User) auth.getPrincipal());
+
         // Retorna uma resposta de sucesso 200 (OK) indicando que o usuário foi registrado com sucesso.
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok( new LoginResponseDTO(token));
     }
     @PostMapping(value ="/auth/register")
     public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDTO){

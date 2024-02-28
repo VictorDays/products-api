@@ -1,6 +1,6 @@
 package com.spring.apirest.controllers;
 
-import com.spring.apirest.dtos.ProductRecordDTO;
+import com.spring.apirest.dtos.ProductDTO;
 import com.spring.apirest.models.products.Product;
 import com.spring.apirest.repositories.ProductRepository;
 import jakarta.validation.Valid;
@@ -24,9 +24,9 @@ public class ProductController {
     ProductRepository productRepository;
 
     @PostMapping(value = "/products")
-    public ResponseEntity<Product> saveProduct(@RequestBody @Valid ProductRecordDTO productRecordDto) {
+    public ResponseEntity<Product> saveProduct(@RequestBody @Valid ProductDTO productDto) {
         var product = new Product();
-        BeanUtils.copyProperties(productRecordDto, product);
+        BeanUtils.copyProperties(productDto, product);
         return ResponseEntity.status(HttpStatus.CREATED).body(productRepository.save(product));
     }
 
@@ -56,7 +56,7 @@ public class ProductController {
 
     @PutMapping("/products/{id}")
     public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
-                                                @RequestBody @Valid ProductRecordDTO productRecordDTO) {
+                                                @RequestBody @Valid ProductDTO productDTO) {
         //Busca  e retorna o objeto no banco de dados
         Optional<Product> productBD = productRepository.findById(id);
         if (productBD.isEmpty()) {
@@ -67,7 +67,7 @@ public class ProductController {
         var productModel = productBD.get();
 
         //trasnforma o dto em model
-        BeanUtils.copyProperties(productRecordDTO, productModel);
+        BeanUtils.copyProperties(productDTO, productModel);
 
         return ResponseEntity.status(HttpStatus.OK).body(productRepository.save(productModel));
     }
