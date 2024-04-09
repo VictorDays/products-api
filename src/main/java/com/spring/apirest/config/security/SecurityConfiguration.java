@@ -29,10 +29,7 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Configura as autorizações para as requisições HTTP.
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/product").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 // Adiciona o filtro de segurança personalizado antes do filtro padrão de autenticação do Spring Security.
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

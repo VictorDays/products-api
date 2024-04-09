@@ -1,4 +1,4 @@
-package com.spring.apirest.dtos;
+package com.spring.apirest.dtos.user;
 
 import com.spring.apirest.models.users.UserRole;
 

@@ -1,6 +1,7 @@
 package com.spring.apirest.models.products;
 
 import jakarta.persistence.*;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
@@ -17,6 +18,15 @@ public class Product extends RepresentationModel<Product> implements Serializabl
     private UUID idProduct;
     private String name;
     private BigDecimal value;
+    private Link detailsLink;
+
+    public Link getDetailsLink() {
+        return detailsLink;
+    }
+
+    public void setDetailsLink(Link detailsLink) {
+        this.detailsLink = detailsLink;
+    }
 
     public UUID getIdProduct() {
         return idProduct;

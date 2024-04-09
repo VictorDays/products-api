@@ -1,8 +1,10 @@
 package com.spring.apirest.controllers;
 
-import com.spring.apirest.dtos.ProductDTO;
+import com.spring.apirest.dtos.product.ProductDTO;
+import com.spring.apirest.dtos.product.ProductResponseDTO;
 import com.spring.apirest.models.products.Product;
 import com.spring.apirest.repositories.ProductRepository;
+import com.spring.apirest.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,64 +23,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ProductController {
 
     @Autowired
-    ProductRepository productRepository;
+    ProductService productService;
 
     @PostMapping(value = "/products")
-    public ResponseEntity<Product> saveProduct(@RequestBody @Valid ProductDTO productDto) {
-        var product = new Product();
-        BeanUtils.copyProperties(productDto, product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productRepository.save(product));
+    public ResponseEntity<ProductResponseDTO> save(@RequestBody @Valid ProductDTO productDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.saveProduct(productDto));
     }
 
     @GetMapping(value = "/products")
-    public ResponseEntity<List<Product>> getAll() {
-        List<Product> listProducts = productRepository.findAll();
-        if (!listProducts.isEmpty()){
-            //quando o cliente solicitar a lista dos produtos vai ser retorna o link para os detalhes de um produto que no caso seria o metodo getProduct;
-            for (Product product: listProducts){
-                UUID id = product.getIdProduct();
-                product.add(linkTo(methodOn(ProductController.class).getProduct(id)).withSelfRel());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(listProducts);
+    public ResponseEntity<List<ProductResponseDTO>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
     }
 
     @GetMapping(value = "/products/{id}")
-    public ResponseEntity<Object> getProduct(@PathVariable(value = "id") UUID id) {
-        Optional<Product> product = productRepository.findById(id);
-        if (product.isEmpty()) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no product saved with this ID");
-        }
-        //quando o cliente solicitar um produto vai ser retornado tbm uma a lista dos produtos;
-        product.get().add(linkTo(methodOn(ProductController.class).getAll()).withRel("Product All"));
-        return ResponseEntity.status(HttpStatus.OK).body(product.get());
+    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable(value = "id") UUID id) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findProduct(id));
     }
 
-    @PutMapping("/products/{id}")
-    public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
-                                                @RequestBody @Valid ProductDTO productDTO) {
-        //Busca  e retorna o objeto no banco de dados
-        Optional<Product> productBD = productRepository.findById(id);
-        if (productBD.isEmpty()) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
-        }
-
-        //atribuindo o objeto de na variável productModel
-        var productModel = productBD.get();
-
-        //trasnforma o dto em model
-        BeanUtils.copyProperties(productDTO, productModel);
-
-        return ResponseEntity.status(HttpStatus.OK).body(productRepository.save(productModel));
+    @PutMapping(value = "/products/{id}")
+    public ResponseEntity<ProductResponseDTO> update(@RequestBody @Valid ProductDTO productDto,@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(productService.update(id,productDto));
     }
 
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id) {
-        Optional<Product> productBD = productRepository.findById(id);
-        if (productBD.isEmpty()) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
-        }
-        productRepository.delete(productBD.get());
-        return ResponseEntity.status(HttpStatus.OK).body("The product has been deleted");
+    public ResponseEntity<Object> delete(@PathVariable(value = "id") UUID id) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(productService.delete(id));
     }
+
 }

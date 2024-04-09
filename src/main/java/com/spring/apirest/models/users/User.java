@@ -27,10 +27,14 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    // Construtor com argumentos
     public User(String login, String passaword, UserRole role) {
         this.login = login;
         this.passaword = passaword;
         this.role = role;
+    }
+    // Construtor padrão sem argumentos
+    public User() {
     }
 
     public UUID getIdUser() {
