@@ -96,14 +96,12 @@ public class ProductService {
         return new ProductResponseDTO(productModel);
     }
 
-    public String delete(@Valid UUID id){
+    public void delete(@Valid UUID id){
         Optional<Product> productBD = productRepository.findById(id);
         if (productBD.isEmpty()) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
         }
         productRepository.delete(productBD.get());
-
-        return "The product has been deleted";
     }
 }
 

@@ -5,6 +5,7 @@ import com.spring.apirest.dtos.product.ProductResponseDTO;
 import com.spring.apirest.models.products.Product;
 import com.spring.apirest.repositories.ProductRepository;
 import com.spring.apirest.services.ProductService;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,14 @@ public class ProductController {
     }
 
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<Object> delete(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(productService.delete(id));
+    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id) {
+        try {
+            productService.delete(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
     }
 
 }
