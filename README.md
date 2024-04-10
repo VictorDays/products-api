@@ -18,7 +18,7 @@ A API oferece um conjunto abrangente de funcionalidades, incluindo:
 
 ## Curso Associado
 
-Este projeto faz parte de um curso ministrado por Michelli Brito. Você pode assistir ao curso completo [aqui](https://www.youtube.com/watch?v=wlYvA2b1BWI).
+Este projeto tem como base um curso ministrado por Michelli Brito. Você pode assistir ao curso completo [aqui](https://www.youtube.com/watch?v=wlYvA2b1BWI).
 
 ## Iniciando o Projeto
 
