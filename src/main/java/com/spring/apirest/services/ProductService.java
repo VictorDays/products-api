@@ -3,6 +3,9 @@ package com.spring.apirest.services;
 import com.spring.apirest.controllers.ProductController;
 import com.spring.apirest.dtos.product.ProductDTO;
 import com.spring.apirest.dtos.product.ProductResponseDTO;
+import com.spring.apirest.infra.exceptions.DatabaseAccessException;
+import com.spring.apirest.infra.exceptions.ProductAlreadyExistsException;
+import com.spring.apirest.infra.exceptions.ProductNotFoundException;
 import com.spring.apirest.models.products.Product;
 import com.spring.apirest.repositories.ProductRepository;
 import jakarta.validation.Valid;
@@ -29,14 +32,20 @@ public class ProductService {
     ProductRepository productRepository;
 
     public ProductResponseDTO saveProduct(@Valid ProductDTO productDto) {
-        var product = new Product();
+        // Verifica se já existe um produto com o mesmo nome no banco de dados
+        if (productRepository.findByName(productDto.name()).isPresent()) {
+            String errorMessage = "Product with name " + productDto.name() + " already exists";
+            throw new ProductAlreadyExistsException(errorMessage);
+        }
 
-        // Copia as propriedades do ProductDTO para o objeto Product
+        // Cria um novo objeto Product e copia as propriedades do DTO
+        Product product = new Product();
         BeanUtils.copyProperties(productDto, product);
 
-        // Salva objeto no banco de dados
+        // Salva o objeto no banco de dados
         productRepository.save(product);
 
+        // Retorna o DTO do produto salvo
         return new ProductResponseDTO(product);
     }
 
@@ -63,11 +72,9 @@ public class ProductService {
     public ProductResponseDTO findProduct(@Valid UUID id) {
         Optional<Product> productOptional = productRepository.findById(id);
 
-        // Verificar se o produto não foi encontrado
+        // Se o produto não foi encontrado
         if (productOptional.isEmpty()) {
-            // Se o produto não for encontrado, retorna uma resposta com status 404
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no product saved with this ID");
-            return null;
+            throw new ProductNotFoundException();
         }
 
         // Adicionar um link para obter todos os produtos
@@ -81,8 +88,9 @@ public class ProductService {
 
     public ProductResponseDTO update(@Valid UUID id, ProductDTO dto)  {
         Optional<Product> productBD = productRepository.findById(id);
+        // Se o produto não foi encontrado
         if (productBD.isEmpty()) {
-            return null;
+            throw new ProductNotFoundException();
         }
 
         // Atribui os dados do DTO ao modelo de produto recuperado do banco de dados
@@ -97,11 +105,19 @@ public class ProductService {
     }
 
     public void delete(@Valid UUID id){
-        Optional<Product> productBD = productRepository.findById(id);
-        if (productBD.isEmpty()) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+        try {
+            Optional<Product> productBD = productRepository.findById(id);
+            // Se o produto não foi encontrado
+            if (productBD.isEmpty()) {
+                throw new ProductNotFoundException("Product not found with ID: " + id);
+            }
+            // Se o produto foi encontrado, exclui do banco de dados
+            productRepository.delete(productBD.get());
+        } catch (ProductNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new DatabaseAccessException("Error deleting product with ID: ");
         }
-        productRepository.delete(productBD.get());
     }
 }
 

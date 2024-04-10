@@ -2,12 +2,14 @@ package com.spring.apirest.infra.error;
 
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
+
 //Classe responsavel pela padronização dos erros
 public class RestErrorMessage {
     private HttpStatus status;
-    private String menssage;
+    private List<String> menssage;
 
-    public RestErrorMessage(HttpStatus status, String menssage) {
+    public RestErrorMessage(HttpStatus status, List<String> menssage) {
         this.status = status;
         this.menssage = menssage;
     }
@@ -20,11 +22,11 @@ public class RestErrorMessage {
         this.status = status;
     }
 
-    public String getMenssage() {
+    public List<String> getMenssage() {
         return menssage;
     }
 
-    public void setMenssage(String menssage) {
+    public void setMenssage(List<String> menssage) {
         this.menssage = menssage;
     }
 }
